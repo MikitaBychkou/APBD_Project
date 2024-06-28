@@ -26,25 +26,6 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
         }
     }
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "admin")]
-    public async Task<IActionResult> DeleteCompanyClient(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _companyClientService.DeleteCompanyClientAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (BadRequestException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
     [HttpPut("{id}")]
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> UpdateCompanyClient(int id, CancellationToken cancellationToken, [FromBody] UpdateCompanyClientRequestModel model)

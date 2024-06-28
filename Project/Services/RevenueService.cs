@@ -7,8 +7,8 @@ namespace Project.Services;
 
 public interface IRevenueService
 {
-    Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model,CancellationToken cancellationToken);
     Task<decimal> CalculateExpectedRevenueAsync(CancellationToken cancellationToken);
+    Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model,CancellationToken cancellationToken);
 }
 public class RevenueService(DatabaseContext _context) : IRevenueService
 {

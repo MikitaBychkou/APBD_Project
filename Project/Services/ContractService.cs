@@ -9,8 +9,8 @@ namespace Project.Services;
 
 public interface IContractService
 {
-    Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model, CancellationToken cancellationToken);
     Task<ContractResponseModel> GetContractByIdAsync(int id, CancellationToken cancellationToken);
+    Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model, CancellationToken cancellationToken);
 }
 public class ContractService(DatabaseContext _context) : IContractService
 {

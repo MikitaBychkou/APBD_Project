@@ -9,9 +9,8 @@ namespace Project.Services;
 public interface ICompanyClientService
 {
     Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model, CancellationToken cancellationToken);
-    Task DeleteCompanyClientAsync(int id, CancellationToken cancellationToken);
-    Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken);
     Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id, CancellationToken cancellationToken);
+    Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken);
 }
 
 public class CompanyClientService(DatabaseContext _context) : ICompanyClientService
@@ -44,23 +43,7 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
             KRS = client.KRS
         };
     }
-
-    public async Task DeleteCompanyClientAsync(int id, CancellationToken cancellationToken)
-    {
-        var client = await _context.Clients.FindAsync(id, cancellationToken);
-
-        if (client == null)
-        {
-            throw new NotFoundException($"Client with id {id} not found");
-        }
-
-        if (client.ClientType != "Company")
-        {
-            throw new BadRequestException("Invalid client type");
-        }
-
-        throw new BadRequestException("Company clients cannot be deleted");
-    }
+    
 
     public async Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken)
     {

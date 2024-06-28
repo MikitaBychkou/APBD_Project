@@ -9,8 +9,8 @@ namespace Project.Services;
 public interface IIndividualClientService
 {
     Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model, CancellationToken cancellationToken);
-    Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken);
     Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model,CancellationToken cancellationToken);
+    Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken);
     Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id, CancellationToken cancellationToken);
 }
 

@@ -13,8 +13,8 @@ namespace Project.Services;
 public interface IEmployeeService
 {
     Task<EmployeeResponseModel> CreateUserAsync(RegisterModel registerModel);
-    Task<TokenResponseModel> RefreshTokenAsync(RefreshTokenModel refreshTokenModel);
     Task<TokenResponseModel> LoginAsync(LoginModel loginModel);
+    Task<TokenResponseModel> RefreshTokenAsync(RefreshTokenModel refreshTokenModel);
 }
 public class EmployeeService(DatabaseContext _context, IConfiguration _configuration) : IEmployeeService
 {

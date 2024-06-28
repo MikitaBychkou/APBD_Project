@@ -10,8 +10,8 @@ namespace Project.Services;
 
 public interface IPaymentService
 {
-    Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model, CancellationToken cancellationToken);
     Task<PaymentResponseModel> GetPaymentByIdAsync(int id,CancellationToken cancellationToken);
+    Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model, CancellationToken cancellationToken);
 }
 
 public class PaymentService(DatabaseContext _context) : IPaymentService
