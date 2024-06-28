@@ -44,19 +44,4 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
             return BadRequest(ex.Message);
         }
     }
-
-    [HttpGet("{id}")]
-    [Authorize]
-    public async Task<IActionResult> GetCompanyClientById(int id,CancellationToken cancellationToken)
-    {
-        try
-        {
-            var result = await _companyClientService.GetCompanyClientByIdAsync(id, cancellationToken);
-            return Ok(result);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-    }
 }

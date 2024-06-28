@@ -8,10 +8,9 @@ namespace Project.Services;
 
 public interface IIndividualClientService
 {
+    Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken);
     Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model, CancellationToken cancellationToken);
     Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model,CancellationToken cancellationToken);
-    Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken);
-    Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id, CancellationToken cancellationToken);
 }
 
 public class IndividualClientService(DatabaseContext _context) : IIndividualClientService
@@ -83,30 +82,6 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         individualClient.Phone = model.Phone;
 
         await _context.SaveChangesAsync(cancellationToken);
-
-        return new IndividualClientResponseModel
-        {
-            Id = individualClient.Id,
-            Address = individualClient.Address,
-            Email = individualClient.Email,
-            Phone = individualClient.Phone,
-            ClientType = individualClient.ClientType,
-            FirstName = individualClient.FirstName,
-            LastName = individualClient.LastName,
-            PESEL = individualClient.PESEL
-        };
-    }
-
-    public async Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id,CancellationToken cancellationToken)
-    {
-        var client = await _context.Clients.FindAsync(id,cancellationToken);
-
-        if (client == null || client.ClientType != "Individual")
-        {
-            throw new NotFoundException($"Client with id {id} not found");
-        }
-
-        var individualClient = client as IndividualClient;
 
         return new IndividualClientResponseModel
         {

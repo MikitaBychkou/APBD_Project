@@ -8,9 +8,8 @@ namespace Project.Services;
 
 public interface ICompanyClientService
 {
-    Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model, CancellationToken cancellationToken);
-    Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id, CancellationToken cancellationToken);
     Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken);
+    Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model, CancellationToken cancellationToken);
 }
 
 public class CompanyClientService(DatabaseContext _context) : ICompanyClientService
@@ -62,29 +61,6 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         companyClient.Phone = model.Phone;
 
         await _context.SaveChangesAsync(cancellationToken);
-
-        return new CompanyClientResponseModel
-        {
-            Id = companyClient.Id,
-            Address = companyClient.Address,
-            Email = companyClient.Email,
-            Phone = companyClient.Phone,
-            ClientType = companyClient.ClientType,
-            CompanyName = companyClient.CompanyName,
-            KRS = companyClient.KRS
-        };
-    }
-
-    public async Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id, CancellationToken cancellationToken)
-    {
-        var client = await _context.Clients.FindAsync(id, cancellationToken);
-
-        if (client == null || client.ClientType != "Company")
-        {
-            throw new NotFoundException($"Client with id {id} not found");
-        }
-
-        var companyClient = client as CompanyClient;
 
         return new CompanyClientResponseModel
         {
