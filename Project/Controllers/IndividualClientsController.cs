@@ -17,7 +17,7 @@ public class IndividualClientsController(IIndividualClientService _individualCli
         try
         {
             var result = await _individualClientService.AddIndividualClientAsync(model);
-            return CreatedAtAction(nameof(GetIndividualClientById), new { id = result.Id }, result);
+            return Created(string.Empty, null);
         }
         catch (BadRequestException ex)
         {

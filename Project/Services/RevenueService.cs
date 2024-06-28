@@ -8,6 +8,7 @@ namespace Project.Services;
 public interface IRevenueService
 {
     Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model);
+    Task<decimal> CalculateExpectedRevenueAsync();
 }
 public class RevenueService(DatabaseContext _context) : IRevenueService
 {
@@ -39,5 +40,18 @@ public class RevenueService(DatabaseContext _context) : IRevenueService
             TotalRevenueInPLN = totalRevenue,
             Currency = "PLN"
         };
+    }
+    
+    public async Task<decimal> CalculateExpectedRevenueAsync()
+    {
+        var signedRevenue = await _context.Contracts
+            .Where(c => c.IsSigned && c.IsPaid)
+            .SumAsync(c => c.Price);
+
+        var expectedRevenue = await _context.Contracts
+            .Where(c => !c.IsSigned)
+            .SumAsync(c => c.Price);
+
+        return signedRevenue + expectedRevenue;
     }
 }
