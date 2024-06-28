@@ -12,11 +12,12 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
 {
 
     [HttpPost]
-    public async Task<IActionResult> AddCompanyClient([FromBody] AddCompanyClientRequestModel model)
+    [Authorize]
+    public async Task<IActionResult> AddCompanyClient(CancellationToken cancellationToken, [FromBody] AddCompanyClientRequestModel model)
     {
         try
         {
-            var result = await _companyClientService.AddCompanyClientAsync(model);
+            var result = await _companyClientService.AddCompanyClientAsync(model ,cancellationToken);
             return Created(string.Empty, null);
         }
         catch (BadRequestException ex)
@@ -26,12 +27,12 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
     }
 
     [HttpDelete("{id}")]
-    // [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteCompanyClient(int id)
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteCompanyClient(int id, CancellationToken cancellationToken)
     {
         try
         {
-            await _companyClientService.DeleteCompanyClientAsync(id);
+            await _companyClientService.DeleteCompanyClientAsync(id, cancellationToken);
             return NoContent();
         }
         catch (NotFoundException ex)
@@ -45,11 +46,12 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCompanyClient(int id, [FromBody] UpdateCompanyClientRequestModel model)
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateCompanyClient(int id, CancellationToken cancellationToken, [FromBody] UpdateCompanyClientRequestModel model)
     {
         try
         {
-            var result = await _companyClientService.UpdateCompanyClientAsync(id, model);
+            var result = await _companyClientService.UpdateCompanyClientAsync(id, model,cancellationToken);
             return Ok(result);
         }
         catch (NotFoundException ex)
@@ -63,11 +65,12 @@ public class CompanyClientsController(ICompanyClientService _companyClientServic
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetCompanyClientById(int id)
+    [Authorize]
+    public async Task<IActionResult> GetCompanyClientById(int id,CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _companyClientService.GetCompanyClientByIdAsync(id);
+            var result = await _companyClientService.GetCompanyClientByIdAsync(id, cancellationToken);
             return Ok(result);
         }
         catch (NotFoundException ex)

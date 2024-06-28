@@ -58,6 +58,7 @@ public class Program
             app.UseSwaggerUI();
         }
         app.UseAuthorization();
+        app.UseAuthentication();
 
         app.UseHttpsRedirection();
         app.MapControllers();

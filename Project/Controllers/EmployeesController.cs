@@ -44,7 +44,7 @@ public class EmployeesController(IEmployeeService _employeeService) : Controller
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+    public async Task<IActionResult> Login(CancellationToken cancellationToken,[FromBody] LoginModel loginModel)
     {
         try
         {

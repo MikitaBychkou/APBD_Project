@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Project.Exceptions;
 using Project.RequstModels;
 using Project.Services;
@@ -10,12 +11,12 @@ public class ContractsController(IContractService _contractService) : Controller
 {
 
     [HttpPost]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> CreateContract([FromBody] CreateContractRequestModel model)
+    [Authorize]
+    public async Task<IActionResult> CreateContract(CancellationToken cancellationToken,[FromBody] CreateContractRequestModel model)
     {
         try
         {
-            var contract = await _contractService.CreateContractAsync(model);
+            var contract = await _contractService.CreateContractAsync(model,cancellationToken);
             return CreatedAtAction(nameof(GetContractById), new { id = contract.Id }, contract);
         }
         catch (Exception ex)
@@ -25,12 +26,12 @@ public class ContractsController(IContractService _contractService) : Controller
     }
 
     [HttpGet("{id}")]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> GetContractById(int id)
+    [Authorize]
+    public async Task<IActionResult> GetContractById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var contract = await _contractService.GetContractByIdAsync(id);
+            var contract = await _contractService.GetContractByIdAsync(id,cancellationToken);
             return Ok(contract);
         }
         catch (Exception ex)

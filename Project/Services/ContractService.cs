@@ -9,16 +9,16 @@ namespace Project.Services;
 
 public interface IContractService
 {
-    Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model);
-    Task<ContractResponseModel> GetContractByIdAsync(int id);
+    Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model, CancellationToken cancellationToken);
+    Task<ContractResponseModel> GetContractByIdAsync(int id, CancellationToken cancellationToken);
 }
 public class ContractService(DatabaseContext _context) : IContractService
 {
 
-    public async Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model)
+    public async Task<ContractResponseModel> CreateContractAsync(CreateContractRequestModel model, CancellationToken cancellationToken)
     {
         var activeContract = await _context.Contracts
-            .FirstOrDefaultAsync(c => c.ClientId == model.ClientId && c.SoftwareId == model.SoftwareId && c.IsActive);
+            .FirstOrDefaultAsync(c => c.ClientId == model.ClientId && c.SoftwareId == model.SoftwareId && c.IsActive,cancellationToken);
 
         if (activeContract != null)
         {
@@ -32,7 +32,7 @@ public class ContractService(DatabaseContext _context) : IContractService
         
         var software = await _context.Softwares
             .Include(s => s.Discounts)
-            .FirstOrDefaultAsync(s => s.Id == model.SoftwareId);
+            .FirstOrDefaultAsync(s => s.Id == model.SoftwareId,cancellationToken);
 
         if (software == null)
         {
@@ -52,7 +52,7 @@ public class ContractService(DatabaseContext _context) : IContractService
 
         var previousContracts = await _context.Contracts
             .Where(c => c.ClientId == model.ClientId && c.IsSigned)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (previousContracts.Any())
         {
@@ -79,7 +79,7 @@ public class ContractService(DatabaseContext _context) : IContractService
         };
 
         _context.Contracts.Add(contract);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new ContractResponseModel
         {
@@ -96,12 +96,12 @@ public class ContractService(DatabaseContext _context) : IContractService
         };
     }
 
-    public async Task<ContractResponseModel> GetContractByIdAsync(int id)
+    public async Task<ContractResponseModel> GetContractByIdAsync(int id, CancellationToken cancellationToken)
     {
         var contract = await _context.Contracts
             .Include(c => c.Client)
             .Include(c => c.Software)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
         if (contract == null)
         {

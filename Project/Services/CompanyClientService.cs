@@ -8,16 +8,16 @@ namespace Project.Services;
 
 public interface ICompanyClientService
 {
-    Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model);
-    Task DeleteCompanyClientAsync(int id);
-    Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model);
-    Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id);
+    Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model, CancellationToken cancellationToken);
+    Task DeleteCompanyClientAsync(int id, CancellationToken cancellationToken);
+    Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken);
+    Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id, CancellationToken cancellationToken);
 }
 
 public class CompanyClientService(DatabaseContext _context) : ICompanyClientService
 {
 
-    public async Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model)
+    public async Task<CompanyClientResponseModel> AddCompanyClientAsync(AddCompanyClientRequestModel model, CancellationToken cancellationToken)
     {
         var client = new CompanyClient
         {
@@ -31,7 +31,7 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         };
 
         _context.Clients.Add(client);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new CompanyClientResponseModel
         {
@@ -45,9 +45,9 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         };
     }
 
-    public async Task DeleteCompanyClientAsync(int id)
+    public async Task DeleteCompanyClientAsync(int id, CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id, cancellationToken);
 
         if (client == null)
         {
@@ -62,9 +62,9 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         throw new BadRequestException("Company clients cannot be deleted");
     }
 
-    public async Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model)
+    public async Task<CompanyClientResponseModel> UpdateCompanyClientAsync(int id, UpdateCompanyClientRequestModel model, CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id,cancellationToken);
 
         if (client == null || client.ClientType != "Company")
         {
@@ -78,7 +78,7 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         companyClient.Email = model.Email;
         companyClient.Phone = model.Phone;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new CompanyClientResponseModel
         {
@@ -92,9 +92,9 @@ public class CompanyClientService(DatabaseContext _context) : ICompanyClientServ
         };
     }
 
-    public async Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id)
+    public async Task<CompanyClientResponseModel> GetCompanyClientByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id, cancellationToken);
 
         if (client == null || client.ClientType != "Company")
         {

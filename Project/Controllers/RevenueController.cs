@@ -11,12 +11,12 @@ namespace Project.Controllers;
 public class RevenueController(IRevenueService _revenueService) : ControllerBase
 {
     [HttpPost]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> CalculateRevenue([FromBody] CalculateRevenueRequestModel model)
+    [Authorize]
+    public async Task<IActionResult> CalculateRevenue(CancellationToken cancellationToken, [FromBody] CalculateRevenueRequestModel model)
     {
         try
         {
-            var revenue = await _revenueService.CalculateRevenueAsync(model);
+            var revenue = await _revenueService.CalculateRevenueAsync(model,cancellationToken);
             return Ok(revenue);
         }
         catch (Exception ex)
@@ -26,12 +26,12 @@ public class RevenueController(IRevenueService _revenueService) : ControllerBase
     }
     
     [HttpGet("calculate-expected")]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> CalculateExpectedRevenue()
+    [Authorize]
+    public async Task<IActionResult> CalculateExpectedRevenue(CancellationToken cancellationToken)
     {
         try
         {
-            var expectedRevenue = await _revenueService.CalculateExpectedRevenueAsync();
+            var expectedRevenue = await _revenueService.CalculateExpectedRevenueAsync(cancellationToken);
             return Ok(new CalculateRevenueResponseModel { Revenue = expectedRevenue });
         }
         catch (Exception ex)

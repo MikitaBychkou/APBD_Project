@@ -10,17 +10,17 @@ namespace Project.Services;
 
 public interface IPaymentService
 {
-    Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model);
-    Task<PaymentResponseModel> GetPaymentByIdAsync(int id);
+    Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model, CancellationToken cancellationToken);
+    Task<PaymentResponseModel> GetPaymentByIdAsync(int id,CancellationToken cancellationToken);
 }
 
 public class PaymentService(DatabaseContext _context) : IPaymentService
 {
 
-    public async Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model)
+    public async Task<PaymentResponseModel> CreatePaymentAsync(CreatePaymentRequestModel model,CancellationToken cancellationToken)
     {
         var contract = await _context.Contracts
-            .FirstOrDefaultAsync(c => c.Id == model.ContractId && c.ClientId == model.ClientId);
+            .FirstOrDefaultAsync(c => c.Id == model.ContractId && c.ClientId == model.ClientId,cancellationToken);
 
         if (contract == null)
         {
@@ -39,7 +39,7 @@ public class PaymentService(DatabaseContext _context) : IPaymentService
 
         var totalPaid = await _context.Payments
             .Where(p => p.ContractId == model.ContractId)
-            .SumAsync(p => p.Amount);
+            .SumAsync(p => p.Amount,cancellationToken);
 
         if (totalPaid + model.Amount > contract.Price)
         {
@@ -55,13 +55,13 @@ public class PaymentService(DatabaseContext _context) : IPaymentService
         };
 
         _context.Payments.Add(payment);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         if (totalPaid + model.Amount == contract.Price)
         {
             contract.IsPaid = true;
             contract.IsSigned = true;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         return new PaymentResponseModel
@@ -74,12 +74,12 @@ public class PaymentService(DatabaseContext _context) : IPaymentService
         };
     }
 
-    public async Task<PaymentResponseModel> GetPaymentByIdAsync(int id)
+    public async Task<PaymentResponseModel> GetPaymentByIdAsync(int id,CancellationToken cancellationToken)
     {
         var payment = await _context.Payments
             .Include(p => p.Client)
             .Include(p => p.Contract)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id,cancellationToken);
 
         if (payment == null)
         {

@@ -12,11 +12,12 @@ public class IndividualClientsController(IIndividualClientService _individualCli
 {
 
     [HttpPost]
-    public async Task<IActionResult> AddIndividualClient([FromBody] AddIndividualClientRequestModel model)
+    [Authorize]
+    public async Task<IActionResult> AddIndividualClient(CancellationToken cancellationToken, [FromBody] AddIndividualClientRequestModel model)
     {
         try
         {
-            var result = await _individualClientService.AddIndividualClientAsync(model);
+            var result = await _individualClientService.AddIndividualClientAsync(model,cancellationToken);
             return Created(string.Empty, null);
         }
         catch (BadRequestException ex)
@@ -26,12 +27,12 @@ public class IndividualClientsController(IIndividualClientService _individualCli
     }
 
     [HttpDelete("{id}")]
-    // [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteIndividualClient(int id)
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteIndividualClient(int id, CancellationToken cancellationToken)
     {
         try
         {
-            await _individualClientService.DeleteIndividualClientAsync(id);
+            await _individualClientService.DeleteIndividualClientAsync(id,cancellationToken);
             return NoContent();
         }
         catch (NotFoundException ex)
@@ -45,11 +46,12 @@ public class IndividualClientsController(IIndividualClientService _individualCli
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIndividualClient(int id, [FromBody] UpdateIndividualClientRequestModel model)
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateIndividualClient(int id, CancellationToken cancellationToken,[FromBody] UpdateIndividualClientRequestModel model)
     {
         try
         {
-            var result = await _individualClientService.UpdateIndividualClientAsync(id, model);
+            var result = await _individualClientService.UpdateIndividualClientAsync(id, model,cancellationToken);
             return Ok(result);
         }
         catch (NotFoundException ex)
@@ -63,11 +65,12 @@ public class IndividualClientsController(IIndividualClientService _individualCli
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetIndividualClientById(int id)
+    [Authorize]
+    public async Task<IActionResult> GetIndividualClientById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _individualClientService.GetIndividualClientByIdAsync(id);
+            var result = await _individualClientService.GetIndividualClientByIdAsync(id,cancellationToken);
             return Ok(result);
         }
         catch (NotFoundException ex)

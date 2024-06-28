@@ -8,16 +8,16 @@ namespace Project.Services;
 
 public interface IIndividualClientService
 {
-    Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model);
-    Task DeleteIndividualClientAsync(int id);
-    Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model);
-    Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id);
+    Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model, CancellationToken cancellationToken);
+    Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken);
+    Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model,CancellationToken cancellationToken);
+    Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id, CancellationToken cancellationToken);
 }
 
 public class IndividualClientService(DatabaseContext _context) : IIndividualClientService
 {
 
-    public async Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model)
+    public async Task<IndividualClientResponseModel> AddIndividualClientAsync(AddIndividualClientRequestModel model,CancellationToken cancellationToken)
     {
         var client = new IndividualClient
         {
@@ -32,7 +32,7 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         };
 
         _context.Clients.Add(client);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new IndividualClientResponseModel
         {
@@ -47,9 +47,9 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         };
     }
 
-    public async Task DeleteIndividualClientAsync(int id)
+    public async Task DeleteIndividualClientAsync(int id,CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id,cancellationToken);
 
         if (client == null)
         {
@@ -62,12 +62,12 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         }
 
         client.IsSoftDeleted = true;
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model)
+    public async Task<IndividualClientResponseModel> UpdateIndividualClientAsync(int id, UpdateIndividualClientRequestModel model,CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id,cancellationToken);
 
         if (client == null || client.ClientType != "Individual")
         {
@@ -82,7 +82,7 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         individualClient.Email = model.Email;
         individualClient.Phone = model.Phone;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new IndividualClientResponseModel
         {
@@ -97,9 +97,9 @@ public class IndividualClientService(DatabaseContext _context) : IIndividualClie
         };
     }
 
-    public async Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id)
+    public async Task<IndividualClientResponseModel> GetIndividualClientByIdAsync(int id,CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FindAsync(id);
+        var client = await _context.Clients.FindAsync(id,cancellationToken);
 
         if (client == null || client.ClientType != "Individual")
         {

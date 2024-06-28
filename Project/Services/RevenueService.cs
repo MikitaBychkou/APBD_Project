@@ -7,13 +7,13 @@ namespace Project.Services;
 
 public interface IRevenueService
 {
-    Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model);
-    Task<decimal> CalculateExpectedRevenueAsync();
+    Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model,CancellationToken cancellationToken);
+    Task<decimal> CalculateExpectedRevenueAsync(CancellationToken cancellationToken);
 }
 public class RevenueService(DatabaseContext _context) : IRevenueService
 {
 
-    public async Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model)
+    public async Task<RevenueResponseModel> CalculateRevenueAsync(CalculateRevenueRequestModel model,CancellationToken cancellationToken)
     {
         decimal totalRevenue = 0;
 
@@ -21,7 +21,7 @@ public class RevenueService(DatabaseContext _context) : IRevenueService
         {
             var contracts = await _context.Contracts
                 .Where(c => c.SoftwareId == model.SoftwareId.Value && c.IsSigned && c.IsPaid)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             totalRevenue = contracts.Sum(c => c.Price);
         }
@@ -29,7 +29,7 @@ public class RevenueService(DatabaseContext _context) : IRevenueService
         {
             var contracts = await _context.Contracts
                 .Where(c => c.IsSigned && c.IsPaid)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             totalRevenue = contracts.Sum(c => c.Price);
         }
@@ -42,15 +42,15 @@ public class RevenueService(DatabaseContext _context) : IRevenueService
         };
     }
     
-    public async Task<decimal> CalculateExpectedRevenueAsync()
+    public async Task<decimal> CalculateExpectedRevenueAsync(CancellationToken cancellationToken)
     {
         var signedRevenue = await _context.Contracts
             .Where(c => c.IsSigned && c.IsPaid)
-            .SumAsync(c => c.Price);
+            .SumAsync(c => c.Price, cancellationToken);
 
         var expectedRevenue = await _context.Contracts
             .Where(c => !c.IsSigned)
-            .SumAsync(c => c.Price);
+            .SumAsync(c => c.Price,cancellationToken);
 
         return signedRevenue + expectedRevenue;
     }

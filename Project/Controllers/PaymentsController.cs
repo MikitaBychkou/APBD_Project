@@ -11,12 +11,12 @@ public class PaymentsController(IPaymentService _paymentService) : ControllerBas
 {
     
     [HttpPost]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequestModel model)
+    [Authorize]
+    public async Task<IActionResult> CreatePayment(CancellationToken cancellationToken,[FromBody] CreatePaymentRequestModel model)
     {
         try
         {
-            var payment = await _paymentService.CreatePaymentAsync(model);
+            var payment = await _paymentService.CreatePaymentAsync(model,cancellationToken);
             return CreatedAtAction(nameof(GetPaymentById), new { id = payment.Id }, payment);
         }
         catch (Exception ex)
@@ -26,12 +26,12 @@ public class PaymentsController(IPaymentService _paymentService) : ControllerBas
     }
 
     [HttpGet("{id}")]
-    // [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> GetPaymentById(int id)
+    [Authorize]
+    public async Task<IActionResult> GetPaymentById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(id);
+            var payment = await _paymentService.GetPaymentByIdAsync(id,cancellationToken);
             return Ok(payment);
         }
         catch (Exception ex)
