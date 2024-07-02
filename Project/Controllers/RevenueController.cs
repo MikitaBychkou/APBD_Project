@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Project.Exceptions;
 using Project.RequstModels;
 using Project.ResponceModels;
 using Project.Services;
@@ -19,7 +20,7 @@ public class RevenueController(IRevenueService _revenueService) : ControllerBase
             var revenue = await _revenueService.CalculateRevenueAsync(model,cancellationToken);
             return Ok(revenue);
         }
-        catch (Exception ex)
+        catch (BadRequestException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -34,7 +35,7 @@ public class RevenueController(IRevenueService _revenueService) : ControllerBase
             var expectedRevenue = await _revenueService.CalculateExpectedRevenueAsync(cancellationToken);
             return Ok(new CalculateRevenueResponseModel { Revenue = expectedRevenue });
         }
-        catch (Exception ex)
+        catch (BadRequestException ex)
         {
             return BadRequest(ex.Message);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Project.Exceptions;
 using Project.RequstModels;
 using Project.Services;
 
@@ -19,7 +20,7 @@ public class PaymentsController(IPaymentService _paymentService) : ControllerBas
             var payment = await _paymentService.CreatePaymentAsync(model,cancellationToken);
             return CreatedAtAction(nameof(GetPaymentById), new { id = payment.Id }, payment);
         }
-        catch (Exception ex)
+        catch (BadRequestException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -34,7 +35,7 @@ public class PaymentsController(IPaymentService _paymentService) : ControllerBas
             var payment = await _paymentService.GetPaymentByIdAsync(id,cancellationToken);
             return Ok(payment);
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
         }

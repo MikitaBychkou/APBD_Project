@@ -19,7 +19,7 @@ public class ContractsController(IContractService _contractService) : Controller
             var contract = await _contractService.CreateContractAsync(model,cancellationToken);
             return CreatedAtAction(nameof(GetContractById), new { id = contract.Id }, contract);
         }
-        catch (Exception ex)
+        catch (BadRequestException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -34,7 +34,7 @@ public class ContractsController(IContractService _contractService) : Controller
             var contract = await _contractService.GetContractByIdAsync(id,cancellationToken);
             return Ok(contract);
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
         }
